@@ -120,25 +120,15 @@ angular.module('google.places', [])
                                 }
                             });
                         } else if (event.which === 27) {
-                            event.stopPropagation();
-                            clearPredictions();
-                            $scope.$digest();
+                            $scope.$apply(function () {
+                                event.stopPropagation();
+                                clearPredictions();
+                            })
                         }
                     }
 
                     function onBlur(event) {
                         if ($scope.predictions.length === 0) {
-                            if ($scope.forceSelection) {
-                                var phase = $scope.$root.$$phase;
-                                var fn = function() {
-                                    $scope.model = '';
-                                }
-                                if(phase == '$apply' || phase == '$digest') {
-                                    fn();
-                                } else {
-                                    $scope.$apply(fn);
-                                }
-                            }
                             return;
                         }
 
@@ -175,6 +165,10 @@ angular.module('google.places', [])
                             });
                         }
 
+                        $timeout(function () {
+                            controller.$viewChangeListeners.forEach(function (fn) {fn()});
+                        });
+
                         clearPredictions();
                     }
 
@@ -207,7 +201,11 @@ angular.module('google.places', [])
                             });
                         });
 
-                        return viewValue;
+                        if ($scope.forceSelection) {
+                            return controller.$modelValue;
+                        } else {
+                            return viewValue;
+                        }
                     }
 
                     function format(modelValue) {
