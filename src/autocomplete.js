@@ -120,15 +120,17 @@ angular.module('google.places', [])
                                 }
                             });
                         } else if (event.which === 27) {
-                            event.stopPropagation();
-                            clearPredictions();
-                            $scope.$digest();
+                            $scope.$apply(function () {
+                                event.stopPropagation();
+                                clearPredictions();
+                                $scope.model = '';
+                            })
                         }
                     }
 
                     function onBlur(event) {
                         if ($scope.predictions.length === 0) {
-                            if ($scope.forceSelection) {
+                            if ($scope.forceSelection && !$scope.model) {
                                 var phase = $scope.$root.$$phase;
                                 var fn = function() {
                                     $scope.model = '';
