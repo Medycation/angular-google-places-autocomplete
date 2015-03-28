@@ -123,7 +123,6 @@ angular.module('google.places', [])
                             $scope.$apply(function () {
                                 event.stopPropagation();
                                 clearPredictions();
-                                $scope.model = '';
                             })
                         }
                     }
@@ -209,7 +208,11 @@ angular.module('google.places', [])
                             });
                         });
 
-                        return viewValue;
+                        if ($scope.forceSelection) {
+                            return controller.$modelValue;
+                        } else {
+                            return viewValue;
+                        }
                     }
 
                     function format(modelValue) {
